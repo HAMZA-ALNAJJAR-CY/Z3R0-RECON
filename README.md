@@ -95,7 +95,7 @@ The **decision engine** (`core/decision.py`) maps open ports to the right tools 
 ### Step 1 — Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/z3r0-recon.git
+git clone https://github.com/HAMZA-ALNAJJAR-CY/Z3R0-RECON.git
 cd z3r0-recon
 ```
 
