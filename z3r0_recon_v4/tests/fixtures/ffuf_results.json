@@ -1,0 +1,7 @@
+{
+  "results": [
+    {"input": {"FUZZ": "admin"}, "status": 200, "length": 1234, "words": 50},
+    {"input": {"FUZZ": "backup.zip"}, "status": 200, "length": 99000, "words": 0},
+    {"input": {"FUZZ": "login"}, "status": 302, "length": 0, "words": 0}
+  ]
+}

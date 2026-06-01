@@ -1,0 +1,1 @@
+http://10.10.10.10 [200 OK] Apache[2.4.49], Country[RESERVED][ZZ], HTTPServer[Apache/2.4.49 (Ubuntu)], IP[10.10.10.10], PHP[7.4.3], WordPress[5.8], X-Powered-By[PHP/7.4.3]

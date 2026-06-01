@@ -1,0 +1,26 @@
+# Z3R0 Recon Framework — Python Dependencies
+#
+# Install: pip install -r requirements.txt
+#
+# All external *tools* (nmap, nuclei, subfinder, etc.) are binaries
+# installed separately — see README.md for installation instructions.
+
+# ── Core (no external deps by design for minimal install) ──────────────────
+# The framework's core runs on Python stdlib only.
+# The packages below unlock optional features.
+
+# ── OSINT plugins (osint_collector.py) ────────────────────────────────────
+aiohttp>=3.9.0          # async HTTP for OTX / URLScan / Shodan / cloud checks
+
+# ── HTML report (reporting/html_report.py) ────────────────────────────────
+# No deps — report is pure Python string templating (no Jinja2 required)
+
+# ── Config file (cli.py --config) ─────────────────────────────────────────
+pyyaml>=6.0             # config.yaml parsing
+
+# ── Optional: structured logging ──────────────────────────────────────────
+# rich>=13.0            # pretty terminal output (optional enhancement)
+
+# ── Dev / testing ─────────────────────────────────────────────────────────
+# pytest>=7.0
+# pytest-asyncio>=0.23

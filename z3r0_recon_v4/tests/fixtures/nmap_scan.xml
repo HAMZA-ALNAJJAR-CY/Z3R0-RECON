@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nmaprun>
+  <host>
+    <os><osmatch name="Linux 4.15" accuracy="95"/></os>
+    <ports>
+      <port protocol="tcp" portid="22">
+        <state state="open"/>
+        <service name="ssh" product="OpenSSH" version="7.4" extrainfo="protocol 2.0"/>
+      </port>
+      <port protocol="tcp" portid="80">
+        <state state="open"/>
+        <service name="http" product="Apache httpd" version="2.4.49" extrainfo=""/>
+        <script id="http-title" output="Apache2 Default Page"/>
+      </port>
+      <port protocol="tcp" portid="23">
+        <state state="open"/>
+        <service name="telnet" product="" version="" extrainfo=""/>
+      </port>
+    </ports>
+  </host>
+</nmaprun>

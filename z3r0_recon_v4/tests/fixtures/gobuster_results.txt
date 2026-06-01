@@ -1,0 +1,6 @@
+/index.html           (Status: 200) [Size: 1234]
+/admin                (Status: 403) [Size: 289]
+/.git                 (Status: 200) [Size: 0]
+/wp-admin             (Status: 301) [Size: 0]
+/api                  (Status: 200) [Size: 5678]
+/notfound             (Status: 404) [Size: 100]

@@ -1,0 +1,82 @@
+# Z3R0 Recon Framework — Configuration File
+#
+# Copy this file to config.yaml and fill in your values.
+# Keys left blank or missing are silently skipped.
+# Run: cp config.yaml.example config.yaml
+#
+# IMPORTANT: Never commit config.yaml to version control.
+# Add it to .gitignore.
+
+# ── API Keys ──────────────────────────────────────────────────────────────────
+api_keys:
+  # Shodan (https://account.shodan.io/)
+  shodan: ""
+
+  # AlienVault OTX (https://otx.alienvault.com/api)
+  otx: ""
+
+  # SecurityTrails — used by subfinder automatically if placed in
+  # ~/.config/subfinder/provider-config.yaml (see subfinder docs)
+  # Listing here as a reminder to configure it there.
+  # security_trails: ""
+
+  # Censys (https://search.censys.io/account/api) — future plugin
+  # censys_id: ""
+  # censys_secret: ""
+
+# ── Tool Paths ────────────────────────────────────────────────────────────────
+# Override binary locations if tools are not on PATH.
+# Leave blank to use PATH resolution (default).
+tools:
+  nmap:        ""     # e.g. /usr/bin/nmap
+  masscan:     ""     # e.g. /usr/bin/masscan
+  subfinder:   ""     # e.g. /root/go/bin/subfinder
+  puredns:     ""     # e.g. /root/go/bin/puredns
+  dnsgen:      ""     # e.g. /usr/local/bin/dnsgen
+  nuclei:      ""     # e.g. /root/go/bin/nuclei
+  httpx:       ""     # e.g. /root/go/bin/httpx
+  gowitness:   ""     # e.g. /root/go/bin/gowitness
+  gobuster:    ""     # e.g. /usr/bin/gobuster
+  ffuf:        ""     # e.g. /root/go/bin/ffuf
+  nikto:       ""     # e.g. /usr/bin/nikto
+  arjun:       ""     # e.g. /usr/local/bin/arjun
+  enum4linux:  ""     # e.g. /usr/bin/enum4linux
+  s3scanner:   ""     # e.g. /root/go/bin/s3scanner
+
+# ── Wordlists ─────────────────────────────────────────────────────────────────
+wordlists:
+  # Subdomain brute-force (puredns)
+  subdomains: "/opt/SecLists/Discovery/DNS/subdomains-top1million-5000.txt"
+
+  # Web directory/file brute-force (gobuster, ffuf)
+  web_content: "/opt/SecLists/Discovery/Web-Content/common.txt"
+
+  # Parameter discovery (arjun)
+  parameters: ""    # arjun uses its built-in list by default
+
+# ── Scan Defaults ─────────────────────────────────────────────────────────────
+scan:
+  # Default nmap timing template (T1-T5)
+  nmap_timing: "T4"
+
+  # Masscan default rate (packets/sec)
+  # Reduce to 100-500 on unstable networks or VPN connections
+  masscan_rate: 1000
+
+  # Number of concurrent workers
+  concurrency: 5
+
+  # Nuclei template severity filter (comma-separated)
+  # Options: critical,high,medium,low,info
+  nuclei_severity: "critical,high,medium,low"
+
+  # Nuclei custom templates directory (leave blank for default)
+  nuclei_templates: ""
+
+# ── OPSEC Profiles ────────────────────────────────────────────────────────────
+# Future: select with --profile stealth|balanced|aggressive
+# opsec:
+#   profile: "balanced"
+#   user_agent: "Mozilla/5.0 (compatible; security-scanner)"
+#   request_delay_ms: 100
+#   jitter_ms: 50
