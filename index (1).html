@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hamza Al-Najjar · Z3R0 — Offensive Security</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080810;
+  --surface: #0d0d18;
+  --surface2: #12121f;
+  --border: rgba(255,255,255,0.07);
+  --border-bright: rgba(255,255,255,0.12);
+  --red: #e03535;
+  --red-dim: rgba(224,53,53,0.12);
+  --red-glow: rgba(224,53,53,0.06);
+  --amber: #d97706;
+  --amber-dim: rgba(217,119,6,0.12);
+  --green: #16a34a;
+  --green-dim: rgba(22,163,74,0.12);
+  --blue: #3b82f6;
+  --blue-dim: rgba(59,130,246,0.10);
+  --text: #c8c8d8;
+  --text-bright: #eeeef8;
+  --muted: #52526a;
+  --muted2: #3a3a52;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+
+/* SCAN LINE TEXTURE */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255,255,255,0.008) 2px,
+    rgba(255,255,255,0.008) 4px
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* CORNER ACCENT TOP LEFT */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 300px; height: 300px;
+  background: radial-gradient(ellipse at top left, rgba(224,53,53,0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 56px;
+  background: rgba(8,8,16,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  color: var(--text-bright);
+  letter-spacing: 2px;
+}
+
+.nav-logo .slash { color: var(--red); }
+
+.nav-links {
+  display: flex;
+  gap: 36px;
+  list-style: none;
+  align-items: center;
+}
+
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-family: 'DM Mono', monospace;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover { color: var(--text-bright); }
+
+.nav-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+  color: var(--green);
+  border: 1px solid rgba(22,163,74,0.25);
+  background: rgba(22,163,74,0.06);
+  padding: 5px 12px;
+  border-radius: 3px;
+}
+
+.nav-status::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse-green 2s infinite;
+}
+
+/* HERO */
+.hero {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 140px 56px 80px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.hero-overline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: fadeUp 0.5s 0.15s forwards;
+}
+
+.hero-overline::before {
+  content: '';
+  width: 28px; height: 1px;
+  background: var(--red);
+  opacity: 0.6;
+}
+
+.hero-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(64px, 9vw, 110px);
+  letter-spacing: 2px;
+  color: var(--text-bright);
+  line-height: 0.92;
+  margin-bottom: 4px;
+  opacity: 0;
+  animation: fadeUp 0.5s 0.3s forwards;
+}
+
+.hero-handle {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(28px, 4vw, 48px);
+  letter-spacing: 6px;
+  color: var(--red);
+  opacity: 0;
+  animation: fadeUp 0.5s 0.45s forwards;
+  margin-bottom: 32px;
+}
+
+.hero-role {
+  font-size: 16px;
+  color: var(--muted);
+  font-weight: 300;
+  max-width: 520px;
+  line-height: 1.7;
+  margin-bottom: 48px;
+  opacity: 0;
+  animation: fadeUp 0.5s 0.6s forwards;
+  border-left: 2px solid var(--red);
+  padding-left: 20px;
+}
+
+.hero-role strong {
+  color: var(--text-bright);
+  font-weight: 500;
+}
+
+/* IMPACT NUMBERS */
+.hero-impact {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  gap: 0;
+  margin-bottom: 52px;
+  opacity: 0;
+  animation: fadeUp 0.5s 0.75s forwards;
+  width: fit-content;
+  border: 1px solid var(--border-bright);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.impact-cell {
+  padding: 22px 32px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.impact-cell:last-child { border-right: none; }
+
+.impact-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36px;
+  letter-spacing: 1px;
+  color: var(--text-bright);
+  line-height: 1;
+}
+
+.impact-num.red { color: var(--red); }
+.impact-num.amber { color: #f59e0b; }
+
+.impact-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.hero-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: fadeUp 0.5s 0.9s forwards;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 26px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  border-radius: 3px;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: none;
+  text-transform: uppercase;
+}
+
+.btn-primary {
+  background: var(--red);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #c42a2a;
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border-bright);
+}
+
+.btn-ghost:hover {
+  border-color: rgba(255,255,255,0.25);
+  color: var(--text-bright);
+  transform: translateY(-1px);
+}
+
+/* SECTION CHROME */
+.sec {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 100px 56px;
+}
+
+.sec-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 20px;
+}
+
+.sec-eyebrow::after {
+  content: '';
+  flex: 1;
+  max-width: 80px;
+  height: 1px;
+  background: var(--red);
+  opacity: 0.4;
+}
+
+.sec-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(38px, 5vw, 64px);
+  letter-spacing: 2px;
+  color: var(--text-bright);
+  line-height: 1;
+  margin-bottom: 14px;
+}
+
+.sec-sub {
+  color: var(--muted);
+  font-size: 14px;
+  max-width: 480px;
+  margin-bottom: 52px;
+  font-family: 'DM Mono', monospace;
+  line-height: 1.7;
+}
+
+/* DIVIDER */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ===== SECURITY IMPACT ===== */
+.impact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+
+.impact-block {
+  background: var(--surface);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: background 0.2s;
+}
+
+.impact-block:hover { background: var(--surface2); }
+
+.impact-block-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 2px;
+  width: fit-content;
+}
+
+.tag-critical { background: rgba(224,53,53,0.12); color: var(--red); border: 1px solid rgba(224,53,53,0.2); }
+.tag-high { background: rgba(217,119,6,0.12); color: #f59e0b; border: 1px solid rgba(217,119,6,0.2); }
+.tag-platform { background: rgba(59,130,246,0.10); color: #60a5fa; border: 1px solid rgba(59,130,246,0.18); }
+.tag-osint { background: rgba(167,139,250,0.10); color: #a78bfa; border: 1px solid rgba(167,139,250,0.18); }
+
+.impact-block-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-bright);
+  line-height: 1.3;
+}
+
+.impact-block-detail {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+  font-family: 'DM Mono', monospace;
+}
+
+.impact-block-meta {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--muted2);
+  margin-top: 4px;
+}
+
+/* WIDE BLOCK */
+.impact-block.wide { grid-column: 1 / -1; }
+
+/* ===== ENGAGEMENT TIMELINE ===== */
+.engagements {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.eng-row {
+  display: grid;
+  grid-template-columns: 36px 1fr auto;
+  align-items: start;
+  gap: 20px;
+  padding: 24px 28px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s;
+}
+
+.eng-row:last-child { border-bottom: none; }
+.eng-row:hover { background: var(--surface2); }
+
+.eng-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--muted2);
+  padding-top: 3px;
+}
+
+.eng-body { display: flex; flex-direction: column; gap: 6px; }
+
+.eng-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-bright);
+}
+
+.eng-chain {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.chain-step {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  padding: 2px 7px;
+  border: 1px solid var(--border-bright);
+  border-radius: 2px;
+  background: var(--surface2);
+}
+
+.chain-arrow {
+  color: var(--muted2);
+  font-size: 10px;
+}
+
+.eng-badges {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding-top: 3px;
+}
+
+/* ===== CERTIFICATIONS ===== */
+.cert-tiers {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.cert-tier-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.cert-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 12px;
+}
+
+.cert-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.cert-card.tier1 {
+  border-color: rgba(224,53,53,0.2);
+}
+
+.cert-card.tier1::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--red);
+}
+
+.cert-card.inprogress {
+  border-color: rgba(251,191,36,0.2);
+}
+
+.cert-card.inprogress::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #fbbf24 60%, transparent);
+  animation: progress-bar 2s ease-in-out infinite alternate;
+}
+
+.cert-card:hover { border-color: rgba(255,255,255,0.14); background: var(--surface2); }
+
+.cert-issuer {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--red);
+}
+
+.cert-card.inprogress .cert-issuer { color: #f59e0b; }
+.cert-card:not(.tier1):not(.inprogress) .cert-issuer { color: var(--blue); }
+
+.cert-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-bright);
+  line-height: 1.3;
+}
+
+.cert-footer {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+}
+
+.cert-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+}
+
+.tier1 .cert-dot { background: var(--red); }
+.inprogress .cert-dot { background: #f59e0b; animation: pulse-amber 2s infinite; }
+.training .cert-dot { background: var(--blue); }
+
+/* ===== Z3R0-RECON ===== */
+.tool-hero {
+  background: var(--surface);
+  border: 1px solid var(--border-bright);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.tool-topbar {
+  padding: 6px 14px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tool-dot { width: 10px; height: 10px; border-radius: 50%; }
+.d-red { background: #e03535; }
+.d-amber { background: #f59e0b; }
+.d-green { background: #16a34a; }
+
+.tool-topbar-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  margin: 0 auto;
+}
+
+.tool-main {
+  padding: 40px;
+}
+
+.tool-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px;
+  margin-bottom: 32px;
+}
+
+.tool-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 52px;
+  letter-spacing: 3px;
+  color: var(--text-bright);
+  line-height: 1;
+}
+
+.tool-title .slash { color: var(--red); }
+
+.tool-tagline {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  color: var(--muted);
+  max-width: 440px;
+  line-height: 1.7;
+  margin-top: 10px;
+}
+
+.tool-github-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--text-bright);
+  border: 1px solid var(--border-bright);
+  transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.tool-github-btn:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.04); }
+
+/* ARCHITECTURE FLOW */
+.arch-flow {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 32px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.arch-node {
+  background: var(--surface2);
+  border: 1px solid var(--border-bright);
+  border-radius: 3px;
+  padding: 10px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.arch-node-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.arch-node-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  color: var(--text-bright);
+  font-weight: 500;
+}
+
+.arch-arrow {
+  color: var(--red);
+  font-size: 16px;
+  padding: 0 8px;
+  flex-shrink: 0;
+}
+
+.tool-features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+}
+
+.tool-feat {
+  padding: 18px 24px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.tool-feat-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--red);
+}
+
+.tool-feat-val {
+  font-size: 13px;
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+}
+
+/* ROADMAP */
+.roadmap {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.roadmap-phase {
+  flex: 1;
+  padding: 18px 20px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.roadmap-phase:last-child { border-right: none; }
+
+.roadmap-phase-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.roadmap-phase-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-bright);
+}
+
+.roadmap-phase ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.roadmap-phase li {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.roadmap-phase li::before {
+  content: '›';
+  color: var(--red);
+  flex-shrink: 0;
+  margin-top: -1px;
+}
+
+.phase-done .roadmap-phase-label { color: var(--green); }
+.phase-active .roadmap-phase-label { color: #f59e0b; }
+
+/* ===== WRITEUPS ===== */
+.writeups-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.writeup-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 24px;
+  padding: 24px 28px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.2s;
+}
+
+.writeup-row:last-child { border-bottom: none; }
+.writeup-row:hover { background: var(--surface2); }
+
+.writeup-main { display: flex; flex-direction: column; gap: 8px; }
+
+.writeup-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.writeup-machine {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-bright);
+}
+
+.diff-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 2px;
+}
+
+.diff-medium { background: rgba(217,119,6,0.12); color: #f59e0b; border: 1px solid rgba(217,119,6,0.2); }
+.diff-hard { background: rgba(224,53,53,0.12); color: var(--red); border: 1px solid rgba(224,53,53,0.2); }
+.diff-easy { background: rgba(22,163,74,0.12); color: #4ade80; border: 1px solid rgba(22,163,74,0.2); }
+.diff-insane { background: rgba(167,139,250,0.10); color: #a78bfa; border: 1px solid rgba(167,139,250,0.2); }
+
+.writeup-chain {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.wc-step {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  padding: 2px 7px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--bg);
+}
+
+.wc-arrow { font-size: 10px; color: var(--muted2); }
+
+.writeup-finding {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.writeup-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.wtag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 2px;
+  border: 1px solid rgba(224,53,53,0.18);
+  background: rgba(224,53,53,0.06);
+  color: #f87171;
+}
+
+.wtag.blue {
+  border-color: rgba(59,130,246,0.18);
+  background: rgba(59,130,246,0.06);
+  color: #93c5fd;
+}
+
+.writeup-arrow {
+  font-size: 18px;
+  color: var(--muted2);
+  transition: all 0.2s;
+}
+
+.writeup-row:hover .writeup-arrow { color: var(--red); transform: translateX(4px); }
+
+/* ===== CONTACT ===== */
+.contact-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.contact-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.contact-copy p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.75;
+}
+
+.contact-copy strong { color: var(--text-bright); font-weight: 500; }
+
+.contact-email-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  color: var(--red);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(224,53,53,0.3);
+  padding-bottom: 2px;
+  transition: border-color 0.2s;
+}
+
+.contact-email-link:hover { border-color: var(--red); }
+
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.contact-link-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s;
+}
+
+.contact-link-row:hover { border-color: var(--border-bright); background: var(--surface2); }
+
+.link-icon {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--red);
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(224,53,53,0.25);
+  background: rgba(224,53,53,0.06);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.link-text { display: flex; flex-direction: column; gap: 2px; }
+
+.link-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-family: 'DM Mono', monospace;
+  color: var(--muted);
+}
+
+.link-value {
+  font-size: 13px;
+  color: var(--text-bright);
+  font-weight: 500;
+}
+
+.link-arrow {
+  margin-left: auto;
+  color: var(--muted2);
+  font-size: 16px;
+  transition: all 0.2s;
+}
+
+.contact-link-row:hover .link-arrow { color: var(--red); transform: translateX(3px); }
+
+/* FOOTER */
+footer {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--border);
+  padding: 28px 56px;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer-left {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.footer-left strong { color: var(--text); }
+
+.footer-right {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--muted2);
+}
+
+/* SCROLL REVEAL */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.55s, transform 0.55s;
+}
+
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-green {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(22,163,74,0.4); }
+  50%       { opacity: 0.7; box-shadow: 0 0 0 4px rgba(22,163,74,0); }
+}
+
+@keyframes pulse-amber {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+@keyframes progress-bar {
+  from { background-position: 0% 0%; }
+  to   { background-position: 100% 0%; }
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  nav { padding: 14px 24px; }
+  .nav-links { display: none; }
+  .hero { padding: 120px 24px 60px; }
+  .sec { padding: 70px 24px; }
+  .hero-impact { grid-template-columns: repeat(2, 1fr); }
+  .impact-cell { padding: 16px 18px; }
+  .impact-grid { grid-template-columns: 1fr; }
+  .impact-block.wide { grid-column: 1; }
+  .tool-features-grid { grid-template-columns: repeat(2, 1fr); }
+  .tool-header-row { flex-direction: column; }
+  .arch-flow { flex-wrap: wrap; }
+  .roadmap { flex-direction: column; }
+  .roadmap-phase { border-right: none; border-bottom: 1px solid var(--border); }
+  .roadmap-phase:last-child { border-bottom: none; }
+  .contact-layout { grid-template-columns: 1fr; }
+  footer { padding: 24px; flex-direction: column; gap: 8px; text-align: center; }
+  .cert-cards { grid-template-columns: 1fr; }
+  .eng-row { grid-template-columns: auto 1fr; }
+  .eng-badges { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Z3R0<span class="slash">/</span>RECON</div>
+  <ul class="nav-links">
+    <li><a href="#impact">Impact</a></li>
+    <li><a href="#engagements">Engagements</a></li>
+    <li><a href="#tool">Z3R0-RECON</a></li>
+    <li><a href="#writeups">Writeups</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-status">Available for Work</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-overline">Offensive Security · Penetration Tester</div>
+  <h1 class="hero-name">HAMZA<br>AL-NAJJAR</h1>
+  <div class="hero-handle">— Z3R0</div>
+  <p class="hero-role">
+    Penetration tester at <strong>Green Circle for Cybersecurity</strong> with documented
+    <strong>critical-severity findings</strong> (9.8 CVSS) across 3 real-world engagements.
+    Builder of Z3R0-RECON — an open-source offensive recon framework.
+    Currently advancing toward <strong>CPTS</strong>.
+  </p>
+
+  <div class="hero-impact">
+    <div class="impact-cell">
+      <span class="impact-num red">9.8</span>
+      <span class="impact-label">Max CVSS Found</span>
+    </div>
+    <div class="impact-cell">
+      <span class="impact-num">7+</span>
+      <span class="impact-label">Vulns Discovered</span>
+    </div>
+    <div class="impact-cell">
+      <span class="impact-num amber">71st</span>
+      <span class="impact-label">BRK-CYS CTF Rank</span>
+    </div>
+    <div class="impact-cell">
+      <span class="impact-num">Top 1%</span>
+      <span class="impact-label">TryHackMe</span>
+    </div>
+  </div>
+
+  <div class="hero-actions">
+    <a href="#contact" class="btn btn-primary">→ Hire Me</a>
+    <a href="https://github.com/HAMZA-ALNAJJAR-CY/Z3R0-RECON" target="_blank" class="btn btn-ghost">↗ Z3R0-RECON on GitHub</a>
+    <a href="https://tryhackme.com/p/HAMZASAMIALNAJJAR" target="_blank" class="btn btn-ghost">THM Profile</a>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- SECURITY IMPACT -->
+<section class="sec" id="impact">
+  <div class="sec-eyebrow">01 — Security Impact</div>
+  <h2 class="sec-title reveal">What I Break</h2>
+  <p class="sec-sub reveal">Real findings. Real clients. Real consequences if left unfixed.</p>
+
+  <div class="impact-grid reveal">
+    <div class="impact-block">
+      <span class="impact-block-tag tag-critical">Critical · CVSS 9.8</span>
+      <div class="impact-block-title">SUID Binary PATH Hijacking → Full Root</div>
+      <div class="impact-block-detail">
+        Exploited a critical SUID misconfiguration with zero prior system knowledge to achieve full root access. Delivered as part of a black-box external engagement — no credentials, no guidance.
+      </div>
+      <div class="impact-block-meta">Ba6Bo6 ERP Solutions · Host 10.10.10.10 · March 2026</div>
+    </div>
+
+    <div class="impact-block">
+      <span class="impact-block-tag tag-high">3 Critical Findings</span>
+      <div class="impact-block-title">7 Vulnerabilities — External Black Box</div>
+      <div class="impact-block-detail">
+        Discovered 7 vulnerabilities (3 Critical, CVSSv3-rated) replicating a real external threat actor. Chained web flaws with LPE to reach full root in 5 attack stages.
+      </div>
+      <div class="impact-block-meta">Ba6Bo6 ERP Solutions · Host 10.10.10.11 · March 2026</div>
+    </div>
+
+    <div class="impact-block">
+      <span class="impact-block-tag tag-platform">TryHackMe · Top 1%</span>
+      <div class="impact-block-title">182+ Hours · 9 Offensive Paths Completed</div>
+      <div class="impact-block-detail">
+        Completed Jr Penetration Tester, Offensive Pentesting, CompTIA PenTest+, AI Security paths and more — 182+ documented hours of structured offensive training.
+      </div>
+      <div class="impact-block-meta">Dec 2025 – Apr 2026</div>
+    </div>
+
+    <div class="impact-block">
+      <span class="impact-block-tag tag-osint">CTF · Regional</span>
+      <div class="impact-block-title">Ranked 71st — BRK-CYS CTF 2026</div>
+      <div class="impact-block-detail">
+        Competed against regional cybersecurity professionals and students across web exploitation, cryptography, and binary analysis. April 2026.
+      </div>
+      <div class="impact-block-meta">BRK-CYS · PicoCTF · CyberTalents</div>
+    </div>
+
+    <div class="impact-block wide">
+      <span class="impact-block-tag tag-critical">Active Employment</span>
+      <div class="impact-block-title">Penetration Tester & Security Consultant — Green Circle for Cybersecurity</div>
+      <div class="impact-block-detail">
+        Conducting black-box and grey-box penetration tests against web and network targets. Delivering professional VAPT reports with CVSSv3 findings, exploitation evidence, and remediation guidance. 3 engagements completed, 7+ vulnerabilities documented, full attack chains from recon to privilege escalation.
+      </div>
+      <div class="impact-block-meta">Amman, Jordan · September 2025 – Present</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ENGAGEMENTS -->
+<section class="sec" id="engagements">
+  <div class="sec-eyebrow">02 — Engagements</div>
+  <h2 class="sec-title reveal">Attack Chains</h2>
+  <p class="sec-sub reveal">How I take a target from zero to root — documented kill chains from completed engagements and machines.</p>
+
+  <div class="engagements reveal">
+
+    <div class="eng-row">
+      <div class="eng-num">01</div>
+      <div class="eng-body">
+        <div class="eng-title">Ba6Bo6 ERP — Black Box (10.10.10.10)</div>
+        <div class="eng-chain">
+          <span class="chain-step">Unauthenticated Recon</span>
+          <span class="chain-arrow">›</span>
+          <span class="chain-step">Credential Exposure</span>
+          <span class="chain-arrow">›</span>
+          <span class="chain-step">DB Enum</span>
+          <span class="chain-arrow">›</span>
+          <span class="chain-step">Hash Crack</span>
+          <span class="chain-arrow">›</span>
+          <span class="chain-step">Web Shell Upload</span>
+          <span class="chain-arrow">›</span>
+          <span class="chain-step">SUID PATH Hijack → Root</span>
+        </div>
+        <div class="eng-chain" style="margin-top:4px;">
+          <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">CVSS 9.8 Critical · Full system compromise from zero credentials</span>
+        </div>
+      </div>
+      <div class="eng-badges">
+        <span class="impact-block-tag tag-critical" style="font-size:9px;">9.8 Critical</span>
+      </div>
+    </div>
+
+    <div class="eng-row">
+      <div class="eng-num">02</div>
+      <div class="eng-body">
+        <div class="eng-title">Ba6Bo6 ERP — External Black Box (10.10.10.11)</div>
+        <div class="eng-chain">
+          <span class="chain-step">External Recon</span>
+          <span class="chain-arrow">›</span>
+          <span class="chain-step">Web App Exploitation</span>
+          <span class="chain-arrow">›</span>
+          <span class="chain-step">Auth Bypass</span>
+          <span class="chain-arrow">›</span>
+          <span class="chain-step">Code Execution</span>
+          <span class="chain-arrow">›</span>
+          <span class="chain-step">LPE → Root</span>
+        </div>
+        <div class="eng-chain" style="margin-top:4px;">
+          <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">7 vulns (3 Critical) · External attacker simulation · Full RoE compliance</span>
+        </div>
+      </div>
+      <div class="eng-badges">
+        <span class="impact-block-tag tag-high" style="font-size:9px;">3 Critical</span>
+      </div>
+    </div>
+
+    <div class="eng-row">
+      <div class="eng-num">03</div>
+      <div class="eng-body">
+        <div class="eng-title">NahamStore — Web App VAPT (TryHackMe)</div>
+        <div class="eng-chain">
+          <span class="chain-step">Unauthenticated Enum</span>
+          <span class="chain-arrow">›</span>
+          <span class="chain-step">Auth Bypass</span>
+          <span class="chain-arrow">›</span>
+          <span class="chain-step">Injection</span>
+          <span class="chain-arrow">›</span>
+          <span class="chain-step">Data Exfiltration</span>
+        </div>
+        <div class="eng-chain" style="margin-top:4px;">
+          <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">CVSSv3-rated findings · Full VAPT report delivered</span>
+        </div>
+      </div>
+      <div class="eng-badges">
+        <span class="impact-block-tag tag-platform" style="font-size:9px;">Web App</span>
+      </div>
+    </div>
+
+    <div class="eng-row">
+      <div class="eng-num">04</div>
+      <div class="eng-body">
+        <div class="eng-title">Facts — HackTheBox (CVE-2024-46987 + CVE-2025-2304)</div>
+        <div class="eng-chain">
+          <span class="chain-step">Recon</span>
+          <span class="chain-arrow">›</span>
+          <span class="chain-step">MinIO Misconfiguration</span>
+          <span class="chain-arrow">›</span>
+          <span class="chain-step">CVE-2024-46987</span>
+          <span class="chain-arrow">›</span>
+          <span class="chain-step">RCE via facter</span>
+          <span class="chain-arrow">›</span>
+          <span class="chain-step">Root</span>
+        </div>
+        <div class="eng-chain" style="margin-top:4px;">
+          <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">Two CVEs chained · Public exploit research + manual exploitation</span>
+        </div>
+      </div>
+      <div class="eng-badges">
+        <span class="impact-block-tag tag-osint" style="font-size:9px;">HTB</span>
+      </div>
+    </div>
+
+    <div class="eng-row">
+      <div class="eng-num">05</div>
+      <div class="eng-body">
+        <div class="eng-title">TwoMillion — HackTheBox (CVE-2023-0386 LPE)</div>
+        <div class="eng-chain">
+          <span class="chain-step">Broken Access Control</span>
+          <span class="chain-arrow">›</span>
+          <span class="chain-step">.env Credential Leak</span>
+          <span class="chain-arrow">›</span>
+          <span class="chain-step">OS Command Injection</span>
+          <span class="chain-arrow">›</span>
+          <span class="chain-step">CVE-2023-0386 LPE</span>
+          <span class="chain-arrow">›</span>
+          <span class="chain-step">Root</span>
+        </div>
+        <div class="eng-chain" style="margin-top:4px;">
+          <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">Kernel LPE via OverlayFS exploit · Full writeup documented</span>
+        </div>
+      </div>
+      <div class="eng-badges">
+        <span class="impact-block-tag tag-critical" style="font-size:9px;">HTB</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- CERTIFICATIONS -->
+<section class="sec" id="certs">
+  <div class="sec-eyebrow">03 — Credentials</div>
+  <h2 class="sec-title reveal">Certifications</h2>
+  <p class="sec-sub reveal">Tier 1 = industry-recognized offensive credentials. Training = platform paths. In Progress = active pursuit.</p>
+
+  <div class="cert-tiers reveal">
+
+    <!-- TIER 1 -->
+    <div>
+      <div class="cert-tier-label">Tier 1 — Recognized Credentials</div>
+      <div class="cert-cards">
+        <div class="cert-card tier1">
+          <div class="cert-issuer">Hackviser</div>
+          <div class="cert-name">CAPT — Certified Associate Penetration Tester</div>
+          <div class="cert-footer">
+            <span class="cert-dot"></span>
+            <span style="color:var(--red);font-family:'DM Mono',monospace;font-size:11px;">Earned · Nov 2025</span>
+          </div>
+        </div>
+        <div class="cert-card tier1">
+          <div class="cert-issuer">Hack & Fix Academy</div>
+          <div class="cert-name">CORI — Certified OSINT & Reconnaissance Investigator</div>
+          <div class="cert-footer">
+            <span class="cert-dot"></span>
+            <span style="color:var(--red);font-family:'DM Mono',monospace;font-size:11px;">Earned · Apr 2026</span>
+          </div>
+        </div>
+        <div class="cert-card tier1">
+          <div class="cert-issuer">Vibe Security</div>
+          <div class="cert-name">JVP — Junior Vibe Pentester</div>
+          <div class="cert-footer">
+            <span class="cert-dot"></span>
+            <span style="color:var(--red);font-family:'DM Mono',monospace;font-size:11px;">Earned · Mar 2026</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- IN PROGRESS -->
+    <div>
+      <div class="cert-tier-label">In Progress — Active Pursuit</div>
+      <div class="cert-cards">
+        <div class="cert-card inprogress">
+          <div class="cert-issuer">HTB Academy</div>
+          <div class="cert-name">CPTS — Certified Penetration Testing Specialist</div>
+          <div class="cert-footer">
+            <span class="cert-dot"></span>
+            <span style="color:#f59e0b;font-family:'DM Mono',monospace;font-size:11px;">In Progress · 2026</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRAINING -->
+    <div>
+      <div class="cert-tier-label">Training — Platform Paths & Courses</div>
+      <div class="cert-cards">
+        <div class="cert-card training">
+          <div class="cert-issuer">TryHackMe</div>
+          <div class="cert-name">9 Learning Paths · 182+ Hours<br>
+            <span style="font-size:12px;font-weight:400;color:var(--muted);">Jr Pentest · Offensive Pentesting · CompTIA PenTest+ · AI Security · Cyber 101 · Web Fundamentals</span>
+          </div>
+          <div class="cert-footer">
+            <span class="cert-dot"></span>
+            <span style="color:var(--blue);font-family:'DM Mono',monospace;font-size:11px;">Completed · Dec 2025 – Apr 2026</span>
+          </div>
+        </div>
+        <div class="cert-card training">
+          <div class="cert-issuer">Future Advance Company</div>
+          <div class="cert-name">Cybersecurity Fundamentals</div>
+          <div class="cert-footer">
+            <span class="cert-dot"></span>
+            <span style="color:var(--blue);font-family:'DM Mono',monospace;font-size:11px;">5-Month Program · Feb 2025</span>
+          </div>
+        </div>
+        <div class="cert-card training">
+          <div class="cert-issuer">Hack & Fix Academy</div>
+          <div class="cert-name">CPPS + CCSC</div>
+          <div class="cert-footer">
+            <span class="cert-dot"></span>
+            <span style="color:var(--blue);font-family:'DM Mono',monospace;font-size:11px;">Earned · Jan 2026</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- Z3R0-RECON -->
+<section class="sec" id="tool">
+  <div class="sec-eyebrow">04 — Flagship Project</div>
+  <h2 class="sec-title reveal">Z3R0-RECON</h2>
+  <p class="sec-sub reveal">An open-source offensive reconnaissance framework — not a wrapper, a pipeline.</p>
+
+  <div class="tool-hero reveal">
+    <div class="tool-topbar">
+      <span class="tool-dot d-red"></span>
+      <span class="tool-dot d-amber"></span>
+      <span class="tool-dot d-green"></span>
+      <span class="tool-topbar-title">z3r0-recon · python3 main.py --target &lt;scope&gt; --profile aggressive</span>
+    </div>
+    <div class="tool-main">
+
+      <div class="tool-header-row">
+        <div>
+          <div class="tool-title">Z3R0<span class="slash">-</span>RECON</div>
+          <div class="tool-tagline">
+            Plugin-based, async-concurrent offensive reconnaissance framework. 
+            Chains nmap, nuclei, subfinder, gobuster, Shodan, OTX, and URLScan into a single
+            intelligent pipeline with a built-in decision engine that selects tools per target automatically.
+          </div>
+        </div>
+        <a href="https://github.com/HAMZA-ALNAJJAR-CY/Z3R0-RECON" target="_blank" class="tool-github-btn">↗ View on GitHub</a>
+      </div>
+
+      <!-- ARCHITECTURE FLOW -->
+      <div style="margin-bottom:10px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);">Pipeline Architecture</div>
+      <div class="arch-flow">
+        <div class="arch-node">
+          <div class="arch-node-label">Input</div>
+          <div class="arch-node-name">Target Scope</div>
+        </div>
+        <div class="arch-arrow">›</div>
+        <div class="arch-node">
+          <div class="arch-node-label">Enum</div>
+          <div class="arch-node-name">subfinder + nmap</div>
+        </div>
+        <div class="arch-arrow">›</div>
+        <div class="arch-node">
+          <div class="arch-node-label">OSINT</div>
+          <div class="arch-node-name">Shodan · OTX · URLScan</div>
+        </div>
+        <div class="arch-arrow">›</div>
+        <div class="arch-node">
+          <div class="arch-node-label">Fuzz</div>
+          <div class="arch-node-name">gobuster + nuclei</div>
+        </div>
+        <div class="arch-arrow">›</div>
+        <div class="arch-node">
+          <div class="arch-node-label">Cloud</div>
+          <div class="arch-node-name">AWS · Azure · GCP</div>
+        </div>
+        <div class="arch-arrow">›</div>
+        <div class="arch-node" style="border-color:rgba(224,53,53,0.3);">
+          <div class="arch-node-label" style="color:var(--red);">Report</div>
+          <div class="arch-node-name">MD + JSON + HTML</div>
+        </div>
+      </div>
+
+      <div class="tool-features-grid">
+        <div class="tool-feat">
+          <div class="tool-feat-label">Architecture</div>
+          <div class="tool-feat-val">Plugin-based modular system</div>
+        </div>
+        <div class="tool-feat">
+          <div class="tool-feat-label">Execution</div>
+          <div class="tool-feat-val">Async concurrent pipeline</div>
+        </div>
+        <div class="tool-feat">
+          <div class="tool-feat-label">Persistence</div>
+          <div class="tool-feat-val">SQLite session storage</div>
+        </div>
+        <div class="tool-feat">
+          <div class="tool-feat-label">Decision Engine</div>
+          <div class="tool-feat-val">Auto tool selection per target</div>
+        </div>
+        <div class="tool-feat">
+          <div class="tool-feat-label">OSINT Sources</div>
+          <div class="tool-feat-val">Shodan · OTX · URLScan</div>
+        </div>
+        <div class="tool-feat">
+          <div class="tool-feat-label">Cloud Enum</div>
+          <div class="tool-feat-val">AWS · Azure · GCP buckets</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ROADMAP -->
+  <div class="roadmap reveal" style="margin-top:20px;">
+    <div class="roadmap-phase phase-done">
+      <div class="roadmap-phase-label">✓ v1 — Shipped</div>
+      <div class="roadmap-phase-name">Core Pipeline</div>
+      <ul>
+        <li>Nmap + subfinder integration</li>
+        <li>Plugin architecture</li>
+        <li>SQLite session persistence</li>
+        <li>MD / JSON / HTML reports</li>
+      </ul>
+    </div>
+    <div class="roadmap-phase phase-active">
+      <div class="roadmap-phase-label">⟳ v2 — In Progress</div>
+      <div class="roadmap-phase-name">Intelligence Layer</div>
+      <ul>
+        <li>Shodan / OTX / URLScan</li>
+        <li>Cloud bucket enumeration</li>
+        <li>Decision engine tuning</li>
+        <li>Nuclei template integration</li>
+      </ul>
+    </div>
+    <div class="roadmap-phase">
+      <div class="roadmap-phase-label">○ v3 — Planned</div>
+      <div class="roadmap-phase-name">Active Exploitation</div>
+      <ul>
+        <li>Auto-nuclei on open ports</li>
+        <li>Vulnerability correlation</li>
+        <li>Scope-aware attack surface</li>
+        <li>Red team report format</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- WRITEUPS -->
+<section class="sec" id="writeups">
+  <div class="sec-eyebrow">05 — Research</div>
+  <h2 class="sec-title reveal">HTB Writeups</h2>
+  <p class="sec-sub reveal">Documented attack chains — full recon to root. Proof of methodology, not just flags.</p>
+
+  <div class="writeups-list reveal">
+
+    <div class="writeup-row">
+      <div class="writeup-main">
+        <div class="writeup-header">
+          <span class="writeup-machine">Facts — HackTheBox</span>
+          <span class="diff-badge diff-medium">Medium</span>
+        </div>
+        <div class="writeup-chain">
+          <span class="wc-step">Recon</span><span class="wc-arrow">›</span>
+          <span class="wc-step">MinIO Enum</span><span class="wc-arrow">›</span>
+          <span class="wc-step">CVE-2024-46987</span><span class="wc-arrow">›</span>
+          <span class="wc-step">RCE via facter</span><span class="wc-arrow">›</span>
+          <span class="wc-step">Root</span>
+        </div>
+        <div class="writeup-tags">
+          <span class="wtag">CVE-2024-46987</span>
+          <span class="wtag">CVE-2025-2304</span>
+          <span class="wtag blue">MinIO Misconfiguration</span>
+          <span class="wtag blue">RCE</span>
+        </div>
+      </div>
+      <div class="writeup-arrow">→</div>
+    </div>
+
+    <div class="writeup-row">
+      <div class="writeup-main">
+        <div class="writeup-header">
+          <span class="writeup-machine">TwoMillion — HackTheBox</span>
+          <span class="diff-badge diff-easy">Easy</span>
+        </div>
+        <div class="writeup-chain">
+          <span class="wc-step">Broken Access Control</span><span class="wc-arrow">›</span>
+          <span class="wc-step">.env Credential Leak</span><span class="wc-arrow">›</span>
+          <span class="wc-step">OS Command Injection</span><span class="wc-arrow">›</span>
+          <span class="wc-step">CVE-2023-0386 LPE</span><span class="wc-arrow">›</span>
+          <span class="wc-step">Root</span>
+        </div>
+        <div class="writeup-tags">
+          <span class="wtag">CVE-2023-0386</span>
+          <span class="wtag">Kernel LPE</span>
+          <span class="wtag blue">Broken Access Control</span>
+          <span class="wtag blue">Credential Exposure</span>
+        </div>
+      </div>
+      <div class="writeup-arrow">→</div>
+    </div>
+
+    <div class="writeup-row" style="opacity:0.6;">
+      <div class="writeup-main">
+        <div class="writeup-header">
+          <span class="writeup-machine">More writeups coming soon</span>
+        </div>
+        <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--muted2);">Active HTB machines in progress → Publishing with methodology + attack chain breakdown</div>
+      </div>
+      <div class="writeup-arrow" style="color:var(--muted2);">⟳</div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- CONTACT -->
+<section class="sec" id="contact">
+  <div class="sec-eyebrow">06 — Contact</div>
+  <h2 class="sec-title reveal">Hire Me</h2>
+
+  <div class="contact-layout reveal">
+    <div class="contact-copy">
+      <p>
+        I'm actively seeking roles in <strong>penetration testing</strong>, <strong>red team operations</strong>, and <strong>offensive security consulting</strong>.
+      </p>
+      <p>
+        I bring documented real-world engagement experience, CVSSv3-rated findings, and the ability to go from zero to root — on real clients, not just labs.
+      </p>
+      <a href="mailto:hamzaalnajjar382@gmail.com" class="contact-email-link">
+        → hamzaalnajjar382@gmail.com
+      </a>
+      <div style="margin-top:8px;">
+        <a href="#" class="btn btn-primary" style="display:inline-flex;">↓ Download CV</a>
+      </div>
+    </div>
+
+    <div class="contact-links">
+      <a href="https://www.linkedin.com/in/hamza-alnajjar04" target="_blank" class="contact-link-row">
+        <div class="link-icon">in</div>
+        <div class="link-text">
+          <div class="link-label">LinkedIn</div>
+          <div class="link-value">hamza-alnajjar04</div>
+        </div>
+        <div class="link-arrow">→</div>
+      </a>
+      <a href="https://github.com/HAMZA-ALNAJJAR-CY" target="_blank" class="contact-link-row">
+        <div class="link-icon">gh</div>
+        <div class="link-text">
+          <div class="link-label">GitHub</div>
+          <div class="link-value">HAMZA-ALNAJJAR-CY</div>
+        </div>
+        <div class="link-arrow">→</div>
+      </a>
+      <a href="https://tryhackme.com/p/HAMZASAMIALNAJJAR" target="_blank" class="contact-link-row">
+        <div class="link-icon" style="font-size:10px;">THM</div>
+        <div class="link-text">
+          <div class="link-label">TryHackMe</div>
+          <div class="link-value">Top 1% · HAMZASAMIALNAJJAR</div>
+        </div>
+        <div class="link-arrow">→</div>
+      </a>
+      <a href="mailto:hamzaalnajjar382@gmail.com" class="contact-link-row">
+        <div class="link-icon">@</div>
+        <div class="link-text">
+          <div class="link-label">Email</div>
+          <div class="link-value">hamzaalnajjar382@gmail.com</div>
+        </div>
+        <div class="link-arrow">→</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">
+    <strong>Hamza Al-Najjar</strong> · Z3R0 · Offensive Security · 2026
+  </div>
+  <div class="footer-right">Amman, Jordan</div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
