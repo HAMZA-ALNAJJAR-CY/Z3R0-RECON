@@ -92,11 +92,13 @@ The **decision engine** (`core/decision.py`) maps open ports to the right tools 
 - Linux / macOS (Kali Linux recommended)
 - External tools installed and on `$PATH` (see below)
 
-### Step 1 — Clone the repository
+### Step 1 — Clone the repository and make env
 
 ```bash
 git clone https://github.com/HAMZA-ALNAJJAR-CY/Z3R0-RECON.git
 cd z3r0-recon
+python3 -m venv venv                                                                                                           
+source venv/bin/activate
 ```
 
 ### Step 2 — Install Python dependencies
